@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NourishLog
 
-## Getting Started
+Calorie tracking frontend built with Next.js 16, React 19, and TypeScript.
 
-First, run the development server:
+Users can search dishes, see calorie breakdowns (USDA data), and keep a daily meal log. Supports dark mode and English/Spanish.
+
+## Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Requires Node 20+ and pnpm 9+.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Copy `.env.example` to `.env.local`. The only variable is `NEXT_PUBLIC_API_BASE_URL` — leave it empty to use the built-in mock API. When set, the app tries the real backend first and falls back to mock if the server is unreachable.
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+pnpm dev          # dev server
+pnpm build        # production build
+pnpm lint         # eslint
+pnpm type-check   # tsc --noEmit
+pnpm test         # vitest (single run)
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## API
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The backend (when available) should expose:
 
-## Deploy on Vercel
+- `POST /register` — `{ first_name, last_name, email, password }` → `{ token, user }`
+- `POST /login` — `{ email, password }` → `{ token, user }`
+- `POST /get-calories` — `{ dish_name, servings }` → `{ dish_name, servings, calories_per_serving, total_calories, source }`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Auth uses JWT. The client attaches `Authorization: Bearer <token>` to all requests and auto-logs out on 401.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Key decisions
+
+- **State**: Zustand. Auth store persists to localStorage, meal store is session-scoped (resets on refresh).
+- **Routing**: App Router. Protected routes (`/dashboard`, `/calories`) are guarded by middleware checking an `auth-token` cookie.
+- **Forms**: React Hook Form + Zod v4 for validation.
+- **i18n**: Custom context-based provider with JSON locale files (`src/locales/`). No external i18n library.
+- **API fallback**: `withFallback()` pattern in `src/lib/api.ts` — tries real endpoint, catches network errors, falls back to mock. Proper API errors (4xx/5xx) are not caught.
+- **Styling**: Tailwind CSS 4 + shadcn/ui components.
+
+## CI
+
+GitHub Actions runs lint, type-check, test, and build on push/PR to `main`.
+
+## Deploy
+
+Connected to Vercel. Deploys automatically on push to `main`.
