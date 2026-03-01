@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Check, Share2 } from "lucide-react";
+import { Plus, Check, Share2, AlertTriangle } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 import { useMealStore } from "@/stores/mealStore";
 import type { CalorieResponse } from "@/types";
@@ -17,10 +18,15 @@ interface ResultCardProps {
 
 export function ResultCard({ data }: ResultCardProps) {
   const { t } = useTranslation();
+  const router = useRouter();
   const addMeal = useMealStore((s) => s.addMeal);
+  const totalLogged = useMealStore((s) => s.totalCalories);
   const [added, setAdded] = useState(false);
 
   const pct = Math.min(Math.round((data.total_calories / DAILY_GOAL) * 100), 100);
+  const projectedTotal = totalLogged + data.total_calories;
+  const projectedPct = Math.round((projectedTotal / DAILY_GOAL) * 100);
+  const wouldExceed = projectedTotal > DAILY_GOAL;
 
   function handleAdd() {
     addMeal({
@@ -31,11 +37,24 @@ export function ResultCard({ data }: ResultCardProps) {
       source: data.source,
     });
     setAdded(true);
-    toast.success(t("result.added"));
+    toast.success(t("result.added"), {
+      action: {
+        label: t("result.viewDashboard"),
+        onClick: () => router.push("/dashboard"),
+      },
+    });
   }
 
   async function handleShare() {
-    const text = `${data.dish_name} (${data.servings} servings) = ${data.total_calories} kcal (${pct}% daily intake)`;
+    const lines = [
+      `${data.dish_name} (${data.servings} servings)`,
+      `${data.calories_per_serving} kcal/serving = ${data.total_calories} kcal total`,
+      `${pct}% of daily intake (2,000 kcal)`,
+    ];
+    if (totalLogged > 0) {
+      lines.push(`Daily total after adding: ${projectedTotal} kcal (${projectedPct}%)`);
+    }
+    const text = lines.join("\n");
 
     if (navigator.share) {
       try {
@@ -86,13 +105,22 @@ export function ResultCard({ data }: ResultCardProps) {
           </div>
           <div className="h-2.5 w-full overflow-hidden rounded-full bg-muted" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
             <div
-              className="h-full rounded-full bg-primary transition-all duration-500"
+              className={`h-full rounded-full transition-all duration-500 ${wouldExceed ? "bg-destructive" : "bg-primary"}`}
               style={{ width: `${pct}%` }}
             />
           </div>
-          <p className="text-xs text-muted-foreground">
-            {t("result.dailyBasis")}
-          </p>
+          {wouldExceed && !added ? (
+            <div className="flex items-center gap-1.5 text-xs text-destructive">
+              <AlertTriangle className="h-3.5 w-3.5" />
+              <span>{t("result.wouldExceed").replace("{pct}", String(projectedPct))}</span>
+            </div>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              {totalLogged > 0
+                ? t("result.projectedTotal").replace("{total}", String(projectedTotal))
+                : t("result.dailyBasis")}
+            </p>
+          )}
         </div>
       </CardContent>
       <CardFooter className="flex gap-2">
