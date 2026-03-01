@@ -8,11 +8,11 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-function formatTime(date: Date) {
+function formatTime(date: Date | string) {
   return new Intl.DateTimeFormat("en", {
     hour: "numeric",
     minute: "2-digit",
-  }).format(date);
+  }).format(new Date(date));
 }
 
 export function MealHistoryTable() {
