@@ -2,9 +2,11 @@ import { useAuthStore } from '@/stores/authStore';
 import type {
   RegisterRequest,
   LoginRequest,
-  AuthResponse,
+  RegisterResponse,
+  LoginResponse,
   CalorieRequest,
   CalorieResponse,
+  UserProfile,
 } from '@/types';
 
 export interface ApiResponse<T> {
@@ -24,18 +26,22 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export interface AuthResult {
+  token: string;
+  user: UserProfile;
+}
+
 async function mockRegisterUser(
   data: RegisterRequest,
-): Promise<ApiResponse<AuthResponse>> {
+): Promise<ApiResponse<AuthResult>> {
   await delay(500);
   return {
     data: {
       token: 'mock-jwt-token-xxx',
       user: {
-        id: '1',
-        first_name: data.first_name,
-        last_name: data.last_name,
         email: data.email,
+        firstName: data.firstName,
+        lastName: data.lastName,
       },
     },
     status: 200,
@@ -44,15 +50,12 @@ async function mockRegisterUser(
 
 async function mockLoginUser(
   data: LoginRequest,
-): Promise<ApiResponse<AuthResponse>> {
+): Promise<ApiResponse<AuthResult>> {
   await delay(500);
   return {
     data: {
       token: 'mock-jwt-token-xxx',
       user: {
-        id: '1',
-        first_name: 'John',
-        last_name: 'Doe',
         email: data.email,
       },
     },
@@ -97,6 +100,7 @@ export async function apiRequest<T>(
 
   if (response.status === 401) {
     useAuthStore.getState().logout();
+    document.cookie = 'auth-token=; path=/; max-age=0';
     throw { message: 'Session expired', status: 401 } as ApiError;
   }
 
@@ -125,9 +129,7 @@ async function withFallback<T>(
     return await realCall();
   } catch (err) {
     const apiErr = err as ApiError;
-    // If it's a proper API error (server responded), don't fall back
     if (apiErr.status && apiErr.status > 0) throw err;
-    // Network error or server unreachable, fall back to mock
     console.warn('API unreachable, using mock data');
     return mockCall();
   }
@@ -135,24 +137,42 @@ async function withFallback<T>(
 
 export async function registerUser(
   data: RegisterRequest,
-): Promise<ApiResponse<AuthResponse>> {
+): Promise<ApiResponse<AuthResult>> {
   return withFallback(
-    () => apiRequest<AuthResponse>('/register', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }),
+    async () => {
+      const res = await apiRequest<RegisterResponse>('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+      return {
+        data: {
+          token: res.data.token,
+          user: { email: data.email, firstName: data.firstName, lastName: data.lastName },
+        },
+        status: res.status,
+      };
+    },
     () => mockRegisterUser(data),
   );
 }
 
 export async function loginUser(
   data: LoginRequest,
-): Promise<ApiResponse<AuthResponse>> {
+): Promise<ApiResponse<AuthResult>> {
   return withFallback(
-    () => apiRequest<AuthResponse>('/login', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }),
+    async () => {
+      const res = await apiRequest<LoginResponse>('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+      return {
+        data: {
+          token: res.data.token,
+          user: { email: data.email },
+        },
+        status: res.status,
+      };
+    },
     () => mockLoginUser(data),
   );
 }

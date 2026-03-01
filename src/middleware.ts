@@ -16,7 +16,7 @@ export function middleware(request: NextRequest) {
 
   // if already logged in, don't show auth pages
   if (authRoutes.some((r) => pathname.startsWith(r)) && token) {
-    const dashUrl = new URL("/dashboard", request.url);
+    const dashUrl = new URL("/calories", request.url);
     return NextResponse.redirect(dashUrl);
   }
 

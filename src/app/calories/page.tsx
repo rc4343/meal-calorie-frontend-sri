@@ -4,9 +4,11 @@ import { useState } from "react";
 import { MealForm } from "@/components/MealForm";
 import { ResultCard } from "@/components/ResultCard";
 import { SkeletonCard } from "@/components/SkeletonCard";
+import { useAuthGuard } from "@/lib/useAuthGuard";
 import type { CalorieResponse } from "@/types";
 
 export default function CaloriesPage() {
+  useAuthGuard();
   const [result, setResult] = useState<CalorieResponse | null>(null);
   const [loading, setLoading] = useState(false);
 

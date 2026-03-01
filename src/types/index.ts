@@ -1,7 +1,7 @@
 // Registration
 export interface RegisterRequest {
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
 }
@@ -12,17 +12,20 @@ export interface LoginRequest {
   password: string;
 }
 
-// Auth Response (shared by register and login)
-export interface AuthResponse {
+// Backend responses
+export interface RegisterResponse {
+  message: string;
   token: string;
-  user: UserProfile;
+}
+
+export interface LoginResponse {
+  token: string;
 }
 
 export interface UserProfile {
-  id: string;
-  first_name: string;
-  last_name: string;
   email: string;
+  firstName?: string;
+  lastName?: string;
 }
 
 // Calorie Lookup

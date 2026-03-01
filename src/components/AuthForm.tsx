@@ -57,7 +57,7 @@ export function AuthForm({ mode }: AuthFormProps) {
       document.cookie = `auth-token=${res.data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
 
       toast.success(t(isRegister ? "auth.success.register" : "auth.success.login"));
-      router.push("/dashboard");
+      router.push("/calories");
     } catch (err) {
       const apiErr = err as ApiError;
       toast.error(apiErr.message || "Something went wrong. Try again.");
@@ -110,19 +110,19 @@ export function AuthForm({ mode }: AuthFormProps) {
             {isRegister && (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <fieldset className="space-y-2">
-                  <Label htmlFor="first_name">{t("auth.firstName")}</Label>
-                  <Input id="first_name" placeholder="John" autoComplete="given-name"
-                    aria-invalid={!!errMsg("first_name")} {...reg("first_name")} />
-                  {errMsg("first_name") && (
-                    <p className="text-sm text-destructive" role="alert">{errMsg("first_name")}</p>
+                  <Label htmlFor="firstName">{t("auth.firstName")}</Label>
+                  <Input id="firstName" placeholder="John" autoComplete="given-name"
+                    aria-invalid={!!errMsg("firstName")} {...reg("firstName")} />
+                  {errMsg("firstName") && (
+                    <p className="text-sm text-destructive" role="alert">{errMsg("firstName")}</p>
                   )}
                 </fieldset>
                 <fieldset className="space-y-2">
-                  <Label htmlFor="last_name">{t("auth.lastName")}</Label>
-                  <Input id="last_name" placeholder="Doe" autoComplete="family-name"
-                    aria-invalid={!!errMsg("last_name")} {...reg("last_name")} />
-                  {errMsg("last_name") && (
-                    <p className="text-sm text-destructive" role="alert">{errMsg("last_name")}</p>
+                  <Label htmlFor="lastName">{t("auth.lastName")}</Label>
+                  <Input id="lastName" placeholder="Doe" autoComplete="family-name"
+                    aria-invalid={!!errMsg("lastName")} {...reg("lastName")} />
+                  {errMsg("lastName") && (
+                    <p className="text-sm text-destructive" role="alert">{errMsg("lastName")}</p>
                   )}
                 </fieldset>
               </div>

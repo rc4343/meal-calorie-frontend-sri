@@ -5,9 +5,11 @@ import { HeroSummary } from "@/components/HeroSummary";
 import { MealHistoryTable } from "@/components/MealHistoryTable";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n";
+import { useAuthGuard } from "@/lib/useAuthGuard";
 
 export function DashboardContent() {
   const { t } = useTranslation();
+  useAuthGuard();
 
   return (
     <section aria-label="Dashboard">

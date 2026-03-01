@@ -16,7 +16,7 @@ export default function HomePage() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (isAuthenticated) router.replace("/dashboard");
+    if (isAuthenticated) router.replace("/calories");
   }, [isAuthenticated, router]);
 
   if (isAuthenticated) return null;
