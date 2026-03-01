@@ -7,7 +7,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { useTranslation } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, LayoutDashboard, Smartphone, UserPlus, UtensilsCrossed, Flame, Zap } from "lucide-react";
+import { Search, LayoutDashboard, Smartphone, UserPlus, UtensilsCrossed, Flame } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export default function HomePage() {
