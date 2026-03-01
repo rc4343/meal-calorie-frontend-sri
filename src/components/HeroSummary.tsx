@@ -4,8 +4,7 @@ import { useMealStore } from "@/stores/mealStore";
 import { useTranslation } from "@/lib/i18n";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertTriangle } from "lucide-react";
-
-const DAILY_GOAL = 2000;
+import { DAILY_GOAL } from "@/lib/constants";
 
 export function HeroSummary() {
   const { t } = useTranslation();

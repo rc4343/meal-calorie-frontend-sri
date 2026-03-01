@@ -59,6 +59,9 @@
   "history.servings": "Porciones",
   "history.calories": "Calorías",
   "history.time": "Hora",
+  "history.actions": "Acciones",
+  "history.remove": "Eliminar {dish}",
+  "history.removed": "{dish} eliminado del registro",
   "history.empty": "Aún no hay comidas. Busca un plato para comenzar.",
   "theme.toggle": "Cambiar tema",
   "locale.switch": "Idioma",
@@ -90,5 +93,17 @@
   "landing.preview.source": "Fuente",
   "landing.preview.sourceValue": "USDA FoodData Central",
   "landing.bottomCta.title": "¿Listo para tomar el control?",
-  "landing.bottomCta.desc": "Únete a miles de personas que rastrean lo que comen sin complicaciones. Gratis, sin tarjeta de crédito."
+  "landing.bottomCta.desc": "Únete a miles de personas que rastrean lo que comen sin complicaciones. Gratis, sin tarjeta de crédito.",
+  "error.badRequest": "Solicitud invalida. Revisa tu entrada.",
+  "error.sessionExpired": "Sesion expirada. Inicia sesion de nuevo.",
+  "error.forbidden": "No tienes permiso para hacer esto.",
+  "error.notFound": "Plato no encontrado. Prueba con otro nombre.",
+  "error.timeout": "La solicitud expiro. Intenta de nuevo.",
+  "error.conflict": "Esta cuenta ya existe.",
+  "error.validation": "Datos invalidos. Revisa tu entrada.",
+  "error.tooMany": "Demasiadas solicitudes. Espera un momento.",
+  "error.server": "Error del servidor. Intenta mas tarde.",
+  "error.unavailable": "Servidor temporalmente no disponible.",
+  "error.maintenance": "Servicio en mantenimiento. Intenta pronto.",
+  "error.unknown": "Algo salio mal. Intenta de nuevo."
 }

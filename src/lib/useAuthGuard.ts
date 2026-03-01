@@ -4,24 +4,37 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
 import { isTokenExpired } from "@/lib/auth";
+import { clearAuthCookie } from "@/lib/cookies";
 
-// Checks token expiry after Zustand has rehydrated from localStorage.
-// Uses a small delay to ensure persist middleware has restored state.
+// Protected pages: redirects to /login if token is missing or expired.
+// Waits for Zustand persist rehydration before checking.
 export function useAuthGuard() {
   const router = useRouter();
+  const hasHydrated = useAuthStore((s) => s._hasHydrated);
 
   useEffect(() => {
-    // Small timeout lets Zustand persist finish rehydrating.
-    // On first render the store is empty; by the next frame it's restored.
-    const id = setTimeout(() => {
-      const { token, logout } = useAuthStore.getState();
-      if (isTokenExpired(token)) {
-        logout();
-        document.cookie = "auth-token=; path=/; max-age=0";
-        router.replace("/login");
-      }
-    }, 50);
+    if (!hasHydrated) return;
 
-    return () => clearTimeout(id);
-  }, [router]);
+    const { token, logout } = useAuthStore.getState();
+    if (!token || isTokenExpired(token)) {
+      logout();
+      clearAuthCookie();
+      router.replace("/login");
+    }
+  }, [hasHydrated, router]);
+}
+
+// Auth pages (login/register): redirects to /calories if already logged in.
+export function useRedirectIfAuthenticated() {
+  const router = useRouter();
+  const hasHydrated = useAuthStore((s) => s._hasHydrated);
+
+  useEffect(() => {
+    if (!hasHydrated) return;
+
+    const { token } = useAuthStore.getState();
+    if (token && !isTokenExpired(token)) {
+      router.replace("/calories");
+    }
+  }, [hasHydrated, router]);
 }

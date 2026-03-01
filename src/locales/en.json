@@ -59,6 +59,9 @@
   "history.servings": "Servings",
   "history.calories": "Calories",
   "history.time": "Time",
+  "history.actions": "Actions",
+  "history.remove": "Remove {dish}",
+  "history.removed": "{dish} removed from log",
   "history.empty": "No meals logged yet. Search for a dish to get started.",
   "theme.toggle": "Toggle theme",
   "locale.switch": "Language",
@@ -90,5 +93,17 @@
   "landing.preview.source": "Source",
   "landing.preview.sourceValue": "USDA FoodData Central",
   "landing.bottomCta.title": "Ready to take control?",
-  "landing.bottomCta.desc": "Join thousands of people who track what they eat without the hassle. Free to use, no credit card needed."
+  "landing.bottomCta.desc": "Join thousands of people who track what they eat without the hassle. Free to use, no credit card needed.",
+  "error.badRequest": "Invalid request. Please check your input.",
+  "error.sessionExpired": "Session expired. Please log in again.",
+  "error.forbidden": "You do not have permission to do this.",
+  "error.notFound": "Dish not found. Try a different name.",
+  "error.timeout": "Request timed out. Please try again.",
+  "error.conflict": "This account already exists.",
+  "error.validation": "Invalid data. Please check your input.",
+  "error.tooMany": "Too many requests. Please wait a moment.",
+  "error.server": "Server error. Please try again later.",
+  "error.unavailable": "Server is temporarily unavailable.",
+  "error.maintenance": "Service is under maintenance. Try again soon.",
+  "error.unknown": "Something went wrong. Please try again."
 }

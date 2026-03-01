@@ -8,9 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Plus, Check, Share2, AlertTriangle } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 import { useMealStore } from "@/stores/mealStore";
+import { DAILY_GOAL } from "@/lib/constants";
 import type { CalorieResponse } from "@/types";
-
-const DAILY_GOAL = 2000;
 
 interface ResultCardProps {
   data: CalorieResponse;

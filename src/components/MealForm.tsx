@@ -9,12 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 
 import { mealSchema } from "@/lib/validations";
 import type { MealFormData } from "@/lib/validations";
 import { getCalories } from "@/lib/api";
-import type { ApiError } from "@/lib/api";
+import { toErrorMessage } from "@/lib/errors";
 import { useTranslation } from "@/lib/i18n";
 import type { CalorieResponse } from "@/types";
 
@@ -41,15 +41,13 @@ export function MealForm({ onResult, onLoading }: MealFormProps) {
     onLoading(true);
     try {
       const res = await getCalories({
-        dish_name: values.dish_name,
+        dish_name: values.dish_name.trim(),
         servings: values.servings,
       });
-      const d = res.data;
-      onResult(d);
-      toast.success(`Found ${d.total_calories} kcal for ${d.dish_name}`);
+      onResult(res.data);
+      toast.success(`Found ${res.data.total_calories} kcal for ${res.data.dish_name}`);
     } catch (err) {
-      const apiErr = err as ApiError;
-      toast.error(apiErr.message || "Could not fetch calorie data.");
+      toast.error(toErrorMessage(t, err));
     } finally {
       setSubmitting(false);
       onLoading(false);
@@ -66,25 +64,51 @@ export function MealForm({ onResult, onLoading }: MealFormProps) {
         <CardContent className="space-y-5">
           <fieldset className="space-y-2">
             <Label htmlFor="dish_name">{t("meal.dishName")}</Label>
-            <Input id="dish_name" placeholder={t("meal.dishPlaceholder")}
-              autoComplete="off" className="h-12 text-base sm:h-10 sm:text-sm"
-              aria-invalid={!!errors.dish_name} {...register("dish_name")} />
+            <Input
+              id="dish_name"
+              placeholder={t("meal.dishPlaceholder")}
+              autoComplete="off"
+              maxLength={100}
+              className="h-12 text-base sm:h-10 sm:text-sm"
+              aria-invalid={!!errors.dish_name}
+              aria-describedby={errors.dish_name ? "dish_name-error" : undefined}
+              {...register("dish_name")}
+            />
             {errors.dish_name && (
-              <p className="text-sm text-destructive" role="alert">{errors.dish_name.message}</p>
+              <p id="dish_name-error" className="text-sm text-destructive" role="alert">
+                {errors.dish_name.message}
+              </p>
             )}
           </fieldset>
+
           <fieldset className="space-y-2">
             <Label htmlFor="servings">{t("meal.servings")}</Label>
-            <Input id="servings" type="number" min={1} step={1} placeholder="1"
+            <Input
+              id="servings"
+              type="number"
+              inputMode="decimal"
+              min={0.5}
+              max={100}
+              step={0.5}
+              placeholder="1"
               className="h-12 text-base sm:h-10 sm:text-sm"
               aria-invalid={!!errors.servings}
-              {...register("servings", { valueAsNumber: true })} />
+              aria-describedby={errors.servings ? "servings-error" : undefined}
+              {...register("servings", { valueAsNumber: true })}
+            />
             {errors.servings && (
-              <p className="text-sm text-destructive" role="alert">{errors.servings.message}</p>
+              <p id="servings-error" className="text-sm text-destructive" role="alert">
+                {errors.servings.message}
+              </p>
             )}
           </fieldset>
+
           <Button type="submit" className="w-full" size="lg" disabled={submitting}>
-            <Search className="h-4 w-4" />
+            {submitting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Search className="h-4 w-4" />
+            )}
             {submitting ? t("meal.searching") : t("meal.search")}
           </Button>
         </CardContent>

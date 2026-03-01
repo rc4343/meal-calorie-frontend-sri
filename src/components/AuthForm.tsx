@@ -14,13 +14,16 @@ import {
   Card, CardContent, CardDescription,
   CardFooter, CardHeader, CardTitle,
 } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 
 import { registerSchema, loginSchema } from "@/lib/validations";
 import type { RegisterFormData, LoginFormData } from "@/lib/validations";
 import { registerUser, loginUser } from "@/lib/api";
-import type { ApiError } from "@/lib/api";
+import { toErrorMessage } from "@/lib/errors";
+import { setAuthCookie } from "@/lib/cookies";
 import { useAuthStore } from "@/stores/authStore";
 import { useTranslation } from "@/lib/i18n";
+import { useRedirectIfAuthenticated } from "@/lib/useAuthGuard";
 
 interface AuthFormProps {
   mode: "login" | "register";
@@ -31,6 +34,8 @@ export function AuthForm({ mode }: AuthFormProps) {
   const { t } = useTranslation();
   const login = useAuthStore((s) => s.login);
   const [loading, setLoading] = useState(false);
+
+  useRedirectIfAuthenticated();
 
   const isRegister = mode === "register";
 
@@ -54,13 +59,12 @@ export function AuthForm({ mode }: AuthFormProps) {
         : await loginUser(data as unknown as LoginFormData);
 
       login(res.data.token, res.data.user);
-      document.cookie = `auth-token=${res.data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+      setAuthCookie(res.data.token);
 
       toast.success(t(isRegister ? "auth.success.register" : "auth.success.login"));
       router.push("/calories");
     } catch (err) {
-      const apiErr = err as ApiError;
-      toast.error(apiErr.message || "Something went wrong. Try again.");
+      toast.error(toErrorMessage(t, err));
     } finally {
       setLoading(false);
     }
@@ -111,18 +115,34 @@ export function AuthForm({ mode }: AuthFormProps) {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <fieldset className="space-y-2">
                   <Label htmlFor="firstName">{t("auth.firstName")}</Label>
-                  <Input id="firstName" placeholder="John" autoComplete="given-name"
-                    aria-invalid={!!errMsg("firstName")} {...reg("firstName")} />
+                  <Input
+                    id="firstName"
+                    placeholder="John"
+                    autoComplete="given-name"
+                    maxLength={50}
+                    className="h-12 text-base sm:h-10 sm:text-sm"
+                    aria-invalid={!!errMsg("firstName")}
+                    aria-describedby={errMsg("firstName") ? "firstName-error" : undefined}
+                    {...reg("firstName")}
+                  />
                   {errMsg("firstName") && (
-                    <p className="text-sm text-destructive" role="alert">{errMsg("firstName")}</p>
+                    <p id="firstName-error" className="text-sm text-destructive" role="alert">{errMsg("firstName")}</p>
                   )}
                 </fieldset>
                 <fieldset className="space-y-2">
                   <Label htmlFor="lastName">{t("auth.lastName")}</Label>
-                  <Input id="lastName" placeholder="Doe" autoComplete="family-name"
-                    aria-invalid={!!errMsg("lastName")} {...reg("lastName")} />
+                  <Input
+                    id="lastName"
+                    placeholder="Doe"
+                    autoComplete="family-name"
+                    maxLength={50}
+                    className="h-12 text-base sm:h-10 sm:text-sm"
+                    aria-invalid={!!errMsg("lastName")}
+                    aria-describedby={errMsg("lastName") ? "lastName-error" : undefined}
+                    {...reg("lastName")}
+                  />
                   {errMsg("lastName") && (
-                    <p className="text-sm text-destructive" role="alert">{errMsg("lastName")}</p>
+                    <p id="lastName-error" className="text-sm text-destructive" role="alert">{errMsg("lastName")}</p>
                   )}
                 </fieldset>
               </div>
@@ -130,26 +150,42 @@ export function AuthForm({ mode }: AuthFormProps) {
 
             <fieldset className="space-y-2">
               <Label htmlFor="email">{t("auth.email")}</Label>
-              <Input id="email" type="email" placeholder="you@example.com" autoComplete="email"
-                aria-invalid={!!errMsg("email")} {...reg("email")} />
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                autoComplete="email"
+                className="h-12 text-base sm:h-10 sm:text-sm"
+                aria-invalid={!!errMsg("email")}
+                aria-describedby={errMsg("email") ? "email-error" : undefined}
+                {...reg("email")}
+              />
               {errMsg("email") && (
-                <p className="text-sm text-destructive" role="alert">{errMsg("email")}</p>
+                <p id="email-error" className="text-sm text-destructive" role="alert">{errMsg("email")}</p>
               )}
             </fieldset>
 
             <fieldset className="space-y-2">
               <Label htmlFor="password">{t("auth.password")}</Label>
-              <Input id="password" type="password" placeholder="••••••••"
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
                 autoComplete={isRegister ? "new-password" : "current-password"}
-                aria-invalid={!!errMsg("password")} {...reg("password")} />
+                className="h-12 text-base sm:h-10 sm:text-sm"
+                aria-invalid={!!errMsg("password")}
+                aria-describedby={errMsg("password") ? "password-error" : undefined}
+                {...reg("password")}
+              />
               {errMsg("password") && (
-                <p className="text-sm text-destructive" role="alert">{errMsg("password")}</p>
+                <p id="password-error" className="text-sm text-destructive" role="alert">{errMsg("password")}</p>
               )}
             </fieldset>
           </CardContent>
 
-          <CardFooter className="flex flex-col items-stretch gap-4">
+          <CardFooter className="flex flex-col items-stretch gap-4 pt-4">
             <Button type="submit" className="w-full" size="lg" disabled={loading}>
+              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
               {loading
                 ? t("auth.loading")
                 : t(isRegister ? "auth.register.submit" : "auth.login.submit")}

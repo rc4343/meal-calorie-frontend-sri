@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/authStore";
 import { useMealStore } from "@/stores/mealStore";
 import { useTranslation } from "@/lib/i18n";
+import { clearAuthCookie } from "@/lib/cookies";
 import { UtensilsCrossed, LayoutDashboard, Search, LogOut } from "lucide-react";
 
 export function Header() {
@@ -20,7 +21,7 @@ export function Header() {
   function handleLogout() {
     logout();
     clearMeals();
-    document.cookie = "auth-token=; path=/; max-age=0";
+    clearAuthCookie();
     router.push("/");
   }
 
