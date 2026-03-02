@@ -13,8 +13,8 @@ export default function CaloriesPage() {
   const [loading, setLoading] = useState(false);
 
   return (
-    <section className="py-6" aria-label="Calorie lookup">
-      <div className="mx-auto max-w-xl space-y-6">
+    <section className="flex min-h-[calc(100vh-3.5rem-3rem)] flex-col items-center justify-start pt-8 sm:justify-center sm:pt-0" aria-label="Calorie lookup">
+      <div className="w-full max-w-xl space-y-6">
         <MealForm onResult={setResult} onLoading={setLoading} />
         <aside aria-label="Calorie results">
           {loading && <SkeletonCard />}

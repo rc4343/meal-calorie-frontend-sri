@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, Loader2 } from "lucide-react";
+import { Sparkles, Loader2 } from "lucide-react";
 
 import { mealSchema } from "@/lib/validations";
 import type { MealFormData } from "@/lib/validations";
@@ -107,7 +107,7 @@ export function MealForm({ onResult, onLoading }: MealFormProps) {
             {submitting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <Search className="h-4 w-4" />
+              <Sparkles className="h-4 w-4" />
             )}
             {submitting ? t("meal.searching") : t("meal.search")}
           </Button>

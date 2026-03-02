@@ -7,7 +7,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { useTranslation } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, LayoutDashboard, Smartphone, UserPlus, UtensilsCrossed, Flame } from "lucide-react";
+import { Zap, BarChart3, Globe, UserCheck, ChefHat, TrendingUp } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export default function HomePage() {
@@ -25,7 +25,7 @@ export default function HomePage() {
     <>
       {/* hero */}
       <section className="flex flex-col items-center gap-6 pb-16 pt-12 text-center sm:pt-20 sm:pb-24">
-        <span className="rounded-full border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+        <span className="rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
           Powered by USDA FoodData Central
         </span>
 
@@ -54,10 +54,9 @@ export default function HomePage() {
             <span className="h-3 w-3 rounded-full bg-red-400" />
             <span className="h-3 w-3 rounded-full bg-yellow-400" />
             <span className="h-3 w-3 rounded-full bg-green-400" />
-            <span className="ml-3 text-xs text-muted-foreground">mealtracker.app/calories</span>
+            <span className="ml-3 text-xs text-muted-foreground">nourishlog.app/calories</span>
           </div>
           <div className="grid gap-6 p-6 sm:grid-cols-2">
-            {/* form side */}
             <div className="space-y-4 rounded-lg border p-5">
               <p className="text-sm font-medium">{t("landing.preview.dishLabel")}</p>
               <div className="flex h-10 items-center rounded-md border bg-background px-3 text-sm text-foreground">
@@ -71,7 +70,6 @@ export default function HomePage() {
                 {t("landing.preview.searchBtn")}
               </div>
             </div>
-            {/* result side */}
             <div className="space-y-4 rounded-lg border p-5">
               <p className="text-lg font-semibold capitalize">{t("landing.preview.dishValue")}</p>
               <dl className="grid grid-cols-2 gap-y-3 text-sm">
@@ -92,21 +90,9 @@ export default function HomePage() {
       {/* features */}
       <section aria-label="Features" className="pb-16">
         <div className="grid gap-6 sm:grid-cols-3">
-          <FeatureCard
-            icon={Search}
-            title={t("landing.feature1.title")}
-            description={t("landing.feature1.desc")}
-          />
-          <FeatureCard
-            icon={LayoutDashboard}
-            title={t("landing.feature2.title")}
-            description={t("landing.feature2.desc")}
-          />
-          <FeatureCard
-            icon={Smartphone}
-            title={t("landing.feature3.title")}
-            description={t("landing.feature3.desc")}
-          />
+          <FeatureCard icon={Zap} title={t("landing.feature1.title")} description={t("landing.feature1.desc")} accent="amber" />
+          <FeatureCard icon={BarChart3} title={t("landing.feature2.title")} description={t("landing.feature2.desc")} accent="teal" />
+          <FeatureCard icon={Globe} title={t("landing.feature3.title")} description={t("landing.feature3.desc")} accent="violet" />
         </div>
       </section>
 
@@ -116,9 +102,9 @@ export default function HomePage() {
           {t("landing.how.title")}
         </h2>
         <div className="grid gap-8 sm:grid-cols-3">
-          <Step icon={UserPlus} title={t("landing.how.step1")} description={t("landing.how.step1.desc")} />
-          <Step icon={UtensilsCrossed} title={t("landing.how.step2")} description={t("landing.how.step2.desc")} />
-          <Step icon={Flame} title={t("landing.how.step3")} description={t("landing.how.step3.desc")} />
+          <Step num={1} icon={UserCheck} title={t("landing.how.step1")} description={t("landing.how.step1.desc")} accent="amber" />
+          <Step num={2} icon={ChefHat} title={t("landing.how.step2")} description={t("landing.how.step2.desc")} accent="teal" />
+          <Step num={3} icon={TrendingUp} title={t("landing.how.step3")} description={t("landing.how.step3.desc")} accent="violet" />
         </div>
       </section>
 
@@ -144,12 +130,21 @@ export default function HomePage() {
   );
 }
 
-function FeatureCard({ icon: Icon, title, description }: { icon: LucideIcon; title: string; description: string }) {
+const accentMap = {
+  amber: { bg: "bg-amber-100 dark:bg-amber-950/40", text: "text-amber-600 dark:text-amber-400", ring: "border-amber-200 dark:border-amber-900/50" },
+  teal: { bg: "bg-teal-100 dark:bg-teal-950/40", text: "text-teal-600 dark:text-teal-400", ring: "border-teal-200 dark:border-teal-900/50" },
+  violet: { bg: "bg-violet-100 dark:bg-violet-950/40", text: "text-violet-600 dark:text-violet-400", ring: "border-violet-200 dark:border-violet-900/50" },
+} as const;
+
+type Accent = keyof typeof accentMap;
+
+function FeatureCard({ icon: Icon, title, description, accent }: { icon: LucideIcon; title: string; description: string; accent: Accent }) {
+  const c = accentMap[accent];
   return (
-    <Card>
+    <Card className={c.ring}>
       <CardContent className="flex flex-col gap-3 pt-6">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-          <Icon className="h-5 w-5 text-primary" />
+        <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${c.bg}`}>
+          <Icon className={`h-5 w-5 ${c.text}`} />
         </div>
         <h3 className="text-base font-semibold">{title}</h3>
         <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
@@ -158,11 +153,15 @@ function FeatureCard({ icon: Icon, title, description }: { icon: LucideIcon; tit
   );
 }
 
-function Step({ icon: Icon, title, description }: { icon: LucideIcon; title: string; description: string }) {
+function Step({ num, icon: Icon, title, description, accent }: { num: number; icon: LucideIcon; title: string; description: string; accent: Accent }) {
+  const c = accentMap[accent];
   return (
     <div className="flex flex-col items-center text-center">
-      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-        <Icon className="h-6 w-6 text-primary" />
+      <div className={`relative mb-3 flex h-12 w-12 items-center justify-center rounded-full ${c.bg}`}>
+        <Icon className={`h-6 w-6 ${c.text}`} />
+        <span className={`absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-foreground text-[10px] font-bold text-background`}>
+          {num}
+        </span>
       </div>
       <h3 className="mb-1 font-semibold">{title}</h3>
       <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>

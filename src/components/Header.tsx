@@ -19,7 +19,7 @@ import { useMealStore } from "@/stores/mealStore";
 import { useTranslation } from "@/lib/i18n";
 import { clearAuthCookie } from "@/lib/cookies";
 import {
-  UtensilsCrossed,
+  Leaf,
   LayoutDashboard,
   Search,
   LogOut,
@@ -64,7 +64,7 @@ export function Header() {
       <nav className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2 text-lg font-semibold tracking-tight">
-            <UtensilsCrossed className="h-5 w-5 text-primary" />
+            <Leaf className="h-5 w-5 text-primary" />
             {t("app.title")}
           </Link>
 
