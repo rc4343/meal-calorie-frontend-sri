@@ -10,6 +10,13 @@ export interface MealState {
   clearMeals: () => void;
 }
 
+function generateId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+}
+
 function sumCalories(meals: MealEntry[]) {
   return meals.reduce((sum, m) => sum + m.totalCalories, 0);
 }
@@ -22,7 +29,7 @@ export const useMealStore = create<MealState>()(
 
       addMeal: (entry) =>
         set((state) => {
-          const meals = [...state.meals, { ...entry, id: crypto.randomUUID(), timestamp: new Date() }];
+          const meals = [...state.meals, { ...entry, id: generateId(), timestamp: new Date() }];
           return { meals, totalCalories: sumCalories(meals) };
         }),
 

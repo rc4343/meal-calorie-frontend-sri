@@ -10,10 +10,7 @@ function decodePayload(token: string): Record<string, unknown> | null {
   }
 }
 
-// Check if a JWT token is expired (with 30s buffer).
-// Returns true only if the token has a valid exp claim that is in the past.
-// If the token can't be decoded or has no exp, we assume it's valid
-// and let the server reject it with 401 if needed.
+
 export function isTokenExpired(token: string | null): boolean {
   if (!token) return true;
   const payload = decodePayload(token);
