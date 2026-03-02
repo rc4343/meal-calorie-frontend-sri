@@ -2,6 +2,7 @@
   "app.title": "NourishLog",
   "nav.dashboard": "Dashboard",
   "nav.calories": "Calories",
+  "nav.profile": "Profile",
   "nav.logout": "Log out",
   "nav.login": "Log in",
   "nav.signup": "Get Started",

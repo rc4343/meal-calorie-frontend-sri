@@ -2,6 +2,7 @@
   "app.title": "NourishLog",
   "nav.dashboard": "Panel",
   "nav.calories": "Calorías",
+  "nav.profile": "Perfil",
   "nav.logout": "Cerrar sesión",
   "nav.login": "Iniciar sesión",
   "nav.signup": "Comenzar",
